@@ -1,0 +1,106 @@
+6.The JOIN operation
+
+
+
+1.	Modify it to show the matchid and player name for all goals scored by Germany. To identify German players, check for: teamid = 'GER'
+
+SELECT MATCHID,PLAYER  FROM GOAL 
+  WHERE TEAMID = 'GER';
+
+
+2.	Show id, stadium, team1, team2 for just game 1012
+
+SELECT ID,STADIUM,TEAM1,TEAM2
+  FROM GAME
+  WHERE ID = 1012;
+
+
+3.	show the player, teamid, stadium and mdate for every German goal.
+
+SELECT PLAYER, TEAMID, STADIUM, MDATE
+  FROM GAME JOIN GOAL ON (ID=MATCHID)
+  WHERE TEAMID = 'GER';
+
+
+4.	Show the team1, team2 and player for every goal scored by a player called Mario player LIKE 'Mario%'
+
+SELECT TEAM1, TEAM2, PLAYER FROM GAME
+  JOIN GOAL ON (ID=MATCHID)
+  WHERE PLAYER LIKE 'Mario%';
+
+
+5.	Show player, teamid, coach, gtime for all goals scored in the first 10 minutes gtime<=10
+
+SELECT PLAYER, TEAMID, COACH, GTIME
+  FROM GOAL
+  JOIN ETEAM ON (TEAMID=ID)
+ WHERE GTIME<=10;
+
+
+6.	List the dates of the matches and the name of the team in which 'Fernando Santos' was the team1 coach.
+
+SELECT MDATE,TEAMNAME FROM GAME
+  JOIN ETEAM ON (TEAM1 = ETEAM.ID)
+  WHERE COACH = 'Fernando Santos';
+
+
+7.	List the player for every goal scored in a game where the stadium was 'National Stadium, Warsaw'
+
+SELECT PLAYER FROM GOAL
+  JOIN GAME ON (MATCHID = ID)
+  WHERE STADIUM = 'National Stadium, Warsaw';
+
+
+8.	Instead show the name of all players who scored a goal against Germany.
+
+SELECT DISTINCT PLAYER
+  FROM GAME JOIN GOAL ON MATCHID = ID
+    WHERE (TEAM1= 'GER' OR TEAM2='GER')
+    AND TEAMID != 'GER';
+
+
+9.	Show teamname and the total number of goals scored.
+
+SELECT TEAMNAME, COUNT(PLAYER)
+  FROM ETEAM JOIN GOAL ON ID=TEAMID
+ GROUP BY TEAMNAME;
+
+
+10.	Show the stadium and the number of goals scored in each stadium.
+
+SELECT STADIUM, COUNT(PLAYER)
+ FROM GOAL  JOIN GAME ON (MATCHID = ID)
+  GROUP BY STADIUM
+
+
+11.	For every match involving 'POL', show the matchid, date and the number of goals scored.
+
+SELECT MATCHID, MDATE, COUNT(PLAYER)
+  FROM GAME JOIN GOAL ON MATCHID = ID
+  WHERE (TEAM1 = 'POL' OR TEAM2 = 'POL')
+  GROUP BY MDATE,MATCHID;
+
+
+12.	For every match where 'GER' scored, show matchid, match date and the number of goals scored by 'GER'
+
+SELECT ID, MDATE, COUNT(PLAYER)
+FROM GAME
+  JOIN GOAL ON ID=MATCHID 
+WHERE ((TEAM1 = 'GER' OR TEAM2 = 'GER') AND TEAMID='GER')
+GROUP BY ID, MDATE;
+
+
+13.	List every match with the goals scored by each team as showN
+
+SELECT MDATE,
+       TEAM1,
+       SUM(CASE WHEN TEAMID = TEAM1 THEN 1 ELSE 0 END) AS SCORE1,
+       TEAM2,
+       SUM(CASE WHEN TEAMID = TEAM2 THEN 1 ELSE 0 END) AS SCORE2 FROM
+    GAME LEFT JOIN GOAL ON (ID = MATCHID)
+    GROUP BY MDATE,TEAM1,TEAM2
+    ORDER BY MDATE, TEAM1,TEAM2;
+
+ 
+
+
